@@ -133,17 +133,21 @@ class Graph {
         visited = new Boolean[n];
         Arrays.fill(visited, false);
         cycleDFS(start, -1);
-        return hasCycle;
+        return this.hasCycle;
     }
     
     private void cycleDFS(int curr, int prev) {
         visited[curr - 1] = true;
         
         for (int v : g.get(curr - 1)) {
-            if (v != prev && visited[v] == true) {
+            if (v != prev && visited[v - 1] == true) {
                 this.hasCycle = true;
+                return;
+            } else if (visited[v - 1] == false) {
+                cycleDFS(v, curr);
+            } else {
+                continue;
             }
-            cycleDFS(v, curr);
         }
     } 
 }
@@ -154,7 +158,8 @@ class GraphMain {
 
         List<List<Integer>> adjacencyList = new ArrayList<>();
         List<List<Integer>> adjacencyList2 = new ArrayList<>();
-
+        List<List<Integer>> adjacencyList3 = new ArrayList<>();
+        
         adjacencyList.add(new ArrayList<Integer>(Arrays.asList(2,3)));
         adjacencyList.add(new ArrayList<Integer>(Arrays.asList(1,3,4,5)));
         adjacencyList.add(new ArrayList<Integer>(Arrays.asList(1,2)));
@@ -167,8 +172,16 @@ class GraphMain {
         adjacencyList2.add(new ArrayList<Integer>(Arrays.asList(2,4)));
         adjacencyList2.add(new ArrayList<Integer>(Arrays.asList(1,3)));
 
+        adjacencyList3.add(new ArrayList<Integer>(Arrays.asList(2)));        
+        adjacencyList3.add(new ArrayList<Integer>(Arrays.asList(1,3,4)));  
+        adjacencyList3.add(new ArrayList<Integer>(Arrays.asList(2,5)));     
+        adjacencyList3.add(new ArrayList<Integer>(Arrays.asList(2)));   
+        adjacencyList3.add(new ArrayList<Integer>(Arrays.asList(3)));        
+
+        
         Graph g = new Graph(adjacencyList);
         Graph g2 = new Graph(adjacencyList2);
+        Graph g3 = new Graph(adjacencyList3);
 
         g.traverseDFS(1);
 
@@ -177,6 +190,10 @@ class GraphMain {
         System.out.println(g.checkBipartite(1, Graph.BLUE, 5)); 
         System.out.println(g2.checkBipartite(1, Graph.BLUE, 4)); 
         
+        System.out.println("------");
+        
         System.out.println(g.checkCycle(1, 5));
+        System.out.println(g2.checkCycle(1, 4));
+        System.out.println(g3.checkCycle(1, 5));
     }
 }
