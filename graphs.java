@@ -55,7 +55,8 @@ class Graph {
     private boolean isBp;
     private Boolean[] visited;
     private boolean hasCycle;
-
+    private int[] visiting;
+    
     public static final int WHITE = 0;
     public static final int RED = 1;
     public static final int BLUE = 2;
@@ -132,6 +133,7 @@ class Graph {
     public boolean checkCycleU(int start, int n) {  
         visited = new Boolean[n];
         Arrays.fill(visited, false);
+        this.hasCycle = false;
         cycleDFSU(start, -1);
         return this.hasCycle;
     }
@@ -152,16 +154,33 @@ class Graph {
     } 
     
     public boolean checkCycleD(int start, int n) {
-        visiting = new Boolean(n);
-        Arrays.fill(visiting, false);
-        cycleDFSU(start, -1);
+        visiting = new int[n];
+        Arrays.fill(visiting, 0);
+        this.hasCycle = false;
+        cycleDFSD(start);
+        for (int i = 1; i <= n; i++) {
+            if (visiting[i - 1] == 0) {
+                cycleDFSD(i);
+            }
+        }
         return this.hasCycle;
     }
     
-    private void cycleDFSD(int curr, int prev) {
-        visiting[curr - 1] = true;
+    private void cycleDFSD(int curr) {
+        visiting[curr - 1] = 1;
         
-        for (int v : g.get
+        for (int v : g.get(curr - 1)) {
+            if (visiting[v - 1] == 1) {
+                this.hasCycle = true;
+                return;
+            } else if (visiting[v - 1] == 0) {
+                cycleDFSD(v);  
+            } else {
+                continue;
+            }
+        }
+        visiting[curr - 1] = 2;
+    }
 }
 
 
@@ -171,13 +190,14 @@ class GraphMain {
         List<List<Integer>> adjacencyList = new ArrayList<>();
         List<List<Integer>> adjacencyList2 = new ArrayList<>();
         List<List<Integer>> adjacencyList3 = new ArrayList<>();
+        List<List<Integer>> adjacencyList4 = new ArrayList<>();
+        List<List<Integer>> adjacencyList5 = new ArrayList<>();
         
         adjacencyList.add(new ArrayList<Integer>(Arrays.asList(2,3)));
         adjacencyList.add(new ArrayList<Integer>(Arrays.asList(1,3,4,5)));
         adjacencyList.add(new ArrayList<Integer>(Arrays.asList(1,2)));
         adjacencyList.add(new ArrayList<Integer>(Arrays.asList(2,5)));
         adjacencyList.add(new ArrayList<Integer>(Arrays.asList(2,4)));
-
 
         adjacencyList2.add(new ArrayList<Integer>(Arrays.asList(2,4)));
         adjacencyList2.add(new ArrayList<Integer>(Arrays.asList(1,3)));
@@ -190,10 +210,24 @@ class GraphMain {
         adjacencyList3.add(new ArrayList<Integer>(Arrays.asList(2)));   
         adjacencyList3.add(new ArrayList<Integer>(Arrays.asList(3)));        
 
+        adjacencyList4.add(new ArrayList<Integer>(Arrays.asList(2, 3)));
+        adjacencyList4.add(new ArrayList<Integer>(Arrays.asList(4)));
+        adjacencyList4.add(new ArrayList<Integer>(Arrays.asList(5)));
+        adjacencyList4.add(new ArrayList<Integer>(Arrays.asList()));
+        adjacencyList4.add(new ArrayList<Integer>(Arrays.asList()));
         
+        adjacencyList5.add(new ArrayList<Integer>(Arrays.asList(2)));    
+        adjacencyList5.add(new ArrayList<Integer>(Arrays.asList(3)));    
+        adjacencyList5.add(new ArrayList<Integer>(Arrays.asList(4)));   
+        adjacencyList5.add(new ArrayList<Integer>(Arrays.asList(2)));    
+        adjacencyList5.add(new ArrayList<Integer>(Arrays.asList()));
+
+         
         Graph g = new Graph(adjacencyList);
         Graph g2 = new Graph(adjacencyList2);
         Graph g3 = new Graph(adjacencyList3);
+        Graph g4 = new Graph(adjacencyList4);
+        Graph g5 = new Graph(adjacencyList5);
 
         g.traverseDFS(1);
 
@@ -207,5 +241,10 @@ class GraphMain {
         System.out.println(g.checkCycleU(1, 5));
         System.out.println(g2.checkCycleU(1, 4));
         System.out.println(g3.checkCycleU(1, 5));
+        
+        System.out.println("------");
+
+        System.out.println(g4.checkCycleD(1,5));
+        System.out.println(g5.checkCycleD(2, 5));
     }
 }
