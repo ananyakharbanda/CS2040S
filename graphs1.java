@@ -60,7 +60,6 @@ class Graph {
     public static final int WHITE = 0;
     public static final int RED = 1;
     public static final int BLUE = 2;
-    public int[] parent;
 
     public Graph(List<List<Integer>> g) {
         this.g = g;
@@ -183,27 +182,6 @@ class Graph {
         visiting[curr - 1] = 2;
     }
         
-    // Prim's algorithm
-    public ArrayList primsMST(int curr, int n) {
-        parent = new int[n];
-        Arrays.fill(parent, -1);
-    }
-    
-    private void primsMSThelper(int curr) {
-        for (Array v : g.get(curr - 1)) {
-            int min = 100000;
-            int next = 0;
-            if (v[1] < min) {
-                int min = v[1];
-                int next = v[0];
-            }
-            parent[next] = curr - 1;
-        return primsMST(int next, int n);
-        }
-    }
-}
-
-
 class GraphMain {
     public static void main(String[] args) {
 
