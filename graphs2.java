@@ -44,6 +44,22 @@ class WeightedGraph {
         return this.parent;
     }
     
+    
+    private void primMSThelper(int start, int n) {
+        List<Edge> vertAdjList = this.g.get(start - 1);
+        visited[start - 1] = true;
+        
+        for (Edge e : vertAdjList) {
+            this.minHeap.add(e);
+        }
+        
+        int count = 0;
+        while (count < n - 1 && !minHeap.isEmpty()) {   
+            
+        }
+    }
+    
+     
     private void primMSThelper(int start, int n) {
 
         List<Edge> vertexAdjacencyList = this.g.get(start-1); 
