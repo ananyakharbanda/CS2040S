@@ -10,61 +10,54 @@
  * Description: implements the ILFShiftRegister interface.
  */
 public class ShiftRegister implements ILFShiftRegister {
-    ///////////////////////////////////
-    // Create your class variables here
-    ///////////////////////////////////
-    // TODO:
+    private final int size;
+    private final int tap;
+    private int[] register;
 
-    ///////////////////////////////////
-    // Create your constructor here:
-    ///////////////////////////////////
     ShiftRegister(int size, int tap) {
-        // TODO:
+        this.size = size;
+        this.tap = tap;
+        this.register = new int[size];
     }
 
-    ///////////////////////////////////
-    // Create your class methods here:
-    ///////////////////////////////////
-    /**
-     * setSeed
-     * @param seed
-     * Description:
-     */
     @Override
     public void setSeed(int[] seed) {
-        // TODO:
+        if (seed.length != size) {
+            throw new IllegalArgumentException("Seed length must match register size");
+        }
+        for (int i = 0; i < size; i++) {
+            register[i] = seed[i];
+        }
     }
 
-    /**
-     * shift
-     * @return
-     * Description:
-     */
     @Override
     public int shift() {
-        // TODO:
-        return 0;
+        // msb is at index size - 1
+        int msb = register[size - 1];
+        int tapBit = register[tap];
+
+        // xor for feedback
+        int feedback = msb ^ tapBit;
+
+        // shift left (towards the msb)
+        for (int i = size - 1; i > 0; i--) {
+            register[i] = register[i - 1];
+        }
+
+        // set lsb to feedback
+        register[0] = feedback;
+
+        return feedback;
     }
 
-    /**
-     * generate
-     * @param k
-     * @return
-     * Description:
-     */
     @Override
     public int generate(int k) {
-        // TODO:
-        return 0;
-    }
+        int result = 0;
 
-    /**
-     * Returns the integer representation for a binary int array.
-     * @param array
-     * @return
-     */
-    private int toDecimal(int[] array) {
-        // TODO:
-        return 0;
+        for (int i = 0; i < k; i++) {
+            result = (result << 1) | shift();
+        }
+
+        return result;
     }
 }

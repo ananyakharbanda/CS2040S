@@ -55,21 +55,16 @@ public class ImageEncode {
      * @param args
      */
     public static void main(String[] args) {
-        // Open an image
         SimpleImage image = new SimpleImage("Mystery Image", "./mystery.bmp");
 
-        // Transform the image using a shift register
         try {
-            /*
-             * TODO: Add your code here to create a shift register.
-             * Use the variable name `shiftReg' for your shift register.
-             * Use your shift register implementation, and set
-             * the tap and the correct seed.
-             */
-            ILFShiftRegister shiftReg = null;
+            int[] seed = {
+                    1, 1, 0, 1, 0, 0, 1, 1, 0, 1, 1, 1, 0
+            };
 
-            ////////////////////////////////
-            // Transform the image
+            ILFShiftRegister shiftReg = new ShiftRegister(13, 7);
+            shiftReg.setSeed(seed);
+
             transform(image, shiftReg);
         } catch (Exception e) {
             System.out.println("Error in transforming image: " + e);
