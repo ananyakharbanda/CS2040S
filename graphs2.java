@@ -97,7 +97,13 @@ class WeightedGraph {
         }
     }
     
-    private void kruskalMST() {
+    public void kruskalMST() {
+        // step 1: have a list of edges sorted by weight
+        // step 2: loop over this sorted list and pop the shortest edge
+        // step 3: add the vertices connected via this edge into a UFDS 
+        // step 4: repeat the process but check if the vertices of the shortest edge are already in the UFDS
+        // step 5: repeat until v vertices have been added 
+        
         
     }
     
