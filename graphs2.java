@@ -3,26 +3,26 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.PriorityQueue;
 
-class Edge {
-    public int destNode;
-    public int src;
-    public int weight;
-
-    public Edge(int d, int s, int w)
-    {
-        this.destNode = d;
-        this.src = s;
-        this.weight = w;
-    }
-
-    @Override
-    public boolean equals(Object o)
-    {
-        Edge e = (Edge)o;
-        return ((this.src == e.src && this.destNode == e.destNode) || (this.src == e.destNode && this.destNode == e.src));
-    }
-}
-
+//class Edge {
+//    public int destNode;
+//    public int src;
+//    public int weight;
+//
+//    public Edge(int d, int s, int w)
+//    {
+//        this.destNode = d;
+//        this.src = s;
+//        this.weight = w;
+//    }
+//
+//    @Override
+//    public boolean equals(Object o)
+//    {
+//        Edge e = (Edge)o;
+//        return ((this.src == e.src && this.destNode == e.destNode) || (this.src == e.destNode && this.destNode == e.src));
+//    }
+//}
+//
 class WeightedGraph {
     private List<List<Edge>> g;
     private static final int NO_PARENT = -1;
@@ -44,22 +44,6 @@ class WeightedGraph {
         return this.parent;
     }
     
-    
-    private void primMSThelper(int start, int n) {
-        List<Edge> vertAdjList = this.g.get(start - 1);
-        visited[start - 1] = true;
-        
-        for (Edge e : vertAdjList) {
-            this.minHeap.add(e);
-        }
-        
-        int count = 0;
-        while (count < n - 1 && !minHeap.isEmpty()) {   
-            
-        }
-    }
-    
-     
     private void primMSThelper(int start, int n) {
 
         List<Edge> vertexAdjacencyList = this.g.get(start-1); 
@@ -103,7 +87,6 @@ class WeightedGraph {
         // step 3: add the vertices connected via this edge into a UFDS 
         // step 4: repeat the process but check if the vertices of the shortest edge are already in the UFDS
         // step 5: repeat until v vertices have been added 
-        
         
     }
     
