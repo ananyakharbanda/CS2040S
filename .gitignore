@@ -1,1 +1,11 @@
 *.class
+
+# macOS Finder files
+.DS_Store
+**/.DS_Store
+
+# Vim swap / backup files
+*.swp
+*.swo
+*.swn
+*~
