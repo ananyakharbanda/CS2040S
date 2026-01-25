@@ -15,7 +15,7 @@ class UFDS {
         
         for (int i = 0; i < size; i++) {
             this.parent[i] = i;
-            this.rank[i] = 1;
+            this.rank[i] = 0;
             this.mappings.put(elements[i], i);
         }
     }
@@ -27,13 +27,25 @@ class UFDS {
         }
         
         int toFind = val.intValue();
+        
+        // finding the root
 
         while(this.parent[toFind] != toFind) {
-            int temp = toFind;
             toFind = this.parent[toFind];
-            this.parent[temp] = this.parent[toFind];
         }
-        return this.parent[toFind];
+        int root = toFind;
+
+        toFind = val.intValue();
+        
+        // path compression
+
+        while (parent[toFind] != toFind) {
+            int next = parent[toFind];
+            parent[toFind] = root;
+            toFind = next;
+        }
+        
+        return root;
     }
     
     public void union(int val1, int val2) {
@@ -53,14 +65,13 @@ class UFDS {
         int rank1 = this.rank[root1];
         int rank2 = this.rank[root2];
             
-        if (rank1 >= rank2) {
+        if (rank1 > rank2) {
             this.parent[root2] = root1;
-            this.rank[root1] = this.rank[root1] + this.rank[root2];
-            this.rank[root2] = 0;
-        } else {
+        } else if (rank2 > rank1) {
             this.parent[root1] = root2;
-            this.rank[root2] = this.rank[root2] + this.rank[root1];
-            this.rank[root1] = 0;
+        } else {
+            this.parent[root2] = root1;
+            this.rank[root1]++;
         }
     }   
     
@@ -76,21 +87,3 @@ class UFDS {
     } 
 } 
 
-
-class UFDStester {
-    public static void main(String[] args) {
-        int[] elements1 = {7, 9, 2, 4, 1, 6};
-        UFDS ufds1 = new UFDS(elements1);
-        ufds1.print();
-        ufds1.union(7, 9);
-        ufds1.print();
-        ufds1.union(7, 1);
-        ufds1.print();
-        ufds1.union(2, 4);
-        ufds1.print();
-        ufds1.union(4, 6);
-        ufds1.print();
-        ufds1.union(2, 6);
-        ufds1.print();
-    }   
-}    
