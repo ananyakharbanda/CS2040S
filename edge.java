@@ -16,4 +16,10 @@ class Edge {
         Edge e = (Edge)o;
         return ((this.src == e.src && this.destNode == e.destNode) || (this.src == e.destNode && this.destNode == e.src));
     }
+    
+    @Override
+    public String toString() {
+        String toReturn = "dest: " + Integer.toString(destNode) + "source: " + Integer.toString(src);
+        return toReturn;
+    }
 }
