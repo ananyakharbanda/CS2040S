@@ -1,7 +1,6 @@
-/**
- * The Optimization class contains a static routine to find the maximum in an array that changes direction at most once.
- */
+
 public class Optimization {
+
     static int[][] testCases = {
             {1, 3, 5, 7, 9, 11, 10, 8, 6, 4},
             {67, 65, 43, 42, 23, 17, 9, 100},
@@ -10,18 +9,14 @@ public class Optimization {
     };
 
     /**
-     * Returns the maximum item in the specified array of integers which changes direction at most once.
-     *
-     * @param dataArray an array of integers which changes direction at most once.
-     * @return the maximum item in data Array
+     * @param dataArray an array of integers which changes direction at most once
+     * @return the maximum item in dataArray, or 0 if input is invalid
      */
     public static int searchMax(int[] dataArray) {
-        if (dataArray == null) {
-            throw new IllegalArgumentException("Array cannot be null");
-        }
 
-        if (dataArray.length == 0) {
-            throw new IllegalArgumentException("Array must have at least one element");
+        // Invalid input handling as per specification
+        if (dataArray == null || dataArray.length == 0) {
+            return 0;
         }
 
         if (dataArray.length == 1) {
@@ -45,9 +40,9 @@ public class Optimization {
             }
             return dataArray[left];
         }
-
         return Math.max(dataArray[0], dataArray[n - 1]);
     }
+
     /**
      * A routine to test the searchMax routine.
      */
