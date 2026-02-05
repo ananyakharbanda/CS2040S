@@ -35,8 +35,10 @@ public class SGTree {
      * @return number of nodes
      */
     public int countNodes(TreeNode node) {
-        // TODO: Implement this
-        return 0;
+        if (node == null) {
+            return 0;
+        }
+        return 1 + countNodes(node.left) + countNodes(node.right);
     }
 
     /**
@@ -46,7 +48,9 @@ public class SGTree {
      * @return array of nodes
      */
     public TreeNode[] enumerateNodes(TreeNode node) {
-        // TODO: Implement this
+        int numNodes = countNodes(node);
+        int[] allNodes = new int[numNodes];
+        while (node != nul)
         return new TreeNode[0];
     }
 
