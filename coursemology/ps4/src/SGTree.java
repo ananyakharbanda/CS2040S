@@ -19,9 +19,11 @@ public class SGTree {
         public TreeNode left = null;
         public TreeNode right = null;
         public TreeNode parent = null;
+        int weight;
 
-        TreeNode(int k) {
-            key = k;
+        TreeNode(int k, int w) {
+            this.key = k;
+            this.weight = w;
         }
     }
 
@@ -77,7 +79,7 @@ public class SGTree {
     public TreeNode buildTree(TreeNode[] nodeList) {
         int n = nodeList.length;
         
-        return new TreeNode(0);
+        return buildTreeHelper(nodeList, 0, n - 1);
     }
 
     public TreeNode buildTreeHelper(TreeNode[] nodeList, int low, int high) {
@@ -86,8 +88,18 @@ public class SGTree {
         }
 
         int mid = (low + high) / 2;
-        TreeNode root = arr[mid];
+        TreeNode root = nodeList[mid];
         root.left = buildTreeHelper(nodeList, low, mid - 1);
+        if (root.left != null) {
+            root.left.parent = root;
+        }
+
+        root.right = buildTreeHelper(nodeList, mid + 1, high);
+        if (root.right != null) {
+            root.right.parent = root;
+        }
+
+        return root;
     }
 
 
@@ -134,30 +146,30 @@ public class SGTree {
     *
     * @param key the key to insert
     */
-    public void insert(int key) {
+    public void insert(int key, int weight) {
         if (root == null) {
-            root = new TreeNode(key);
+            root = new TreeNode(key, weight);
             return;
         }
 
-        insert(key, root);
+        insert(key, weight, root);
     }
 
     // Helper method to insert a key into the tree
-    private void insert(int key, TreeNode node) {
+    private void insert(int key, int weight, TreeNode node) {
         if (key <= node.key) {
             if (node.left == null) {
                 node.left = new TreeNode(key);
                 node.left.parent = node;
             } else {
-                insert(key, node.left);
+                insert(key, weight, node.left);
             }
         } else {
             if (node.right == null) {
                 node.right = new TreeNode(key);
                 node.right.parent = node;
             } else {
-                insert(key, node.right);
+                insert(key, weight, node.right);
             }
         }
     }
