@@ -21,9 +21,9 @@ public class SGTree {
         public TreeNode parent = null;
         int weight;
 
-        TreeNode(int k, int w) {
+        TreeNode(int k) {
             this.key = k;
-            this.weight = w;
+            this.weight = 1;
         }
     }
 
@@ -78,7 +78,7 @@ public class SGTree {
      */
     public TreeNode buildTree(TreeNode[] nodeList) {
         int n = nodeList.length;
-        
+
         return buildTreeHelper(nodeList, 0, n - 1);
     }
 
@@ -99,6 +99,16 @@ public class SGTree {
             root.right.parent = root;
         }
 
+        if (root.left != null && root.right != null) {
+            root.weight = root.left.weight + root.right.weight + 1;
+        } else if (root.right != null) {
+            root.weight = root.right.weight + 1;
+        } else if (root.left != null) {
+            root.weight = root.left.weight + 1;
+        } else {
+            root.weight = 1;
+        }
+
         return root;
     }
 
@@ -111,15 +121,32 @@ public class SGTree {
      * @return true if the node is balanced, false otherwise
      */
     public boolean checkBalance(TreeNode node) {
-        // TODO: Implement this
+        if (node.left != null && node.right != null) {
+            int compareLeft = node.left.weight;
+            int compareRight = node.right.weight;
+
+            if (3 * compareLeft > 2 * node.weight || 3 * compareRight > 2 * node.weight) {
+                return false;
+            }
+        } else if (node.left != null) {
+            int compareLeft = node.left.weight;
+            if (3 * compareLeft > 2 * node.weight) {
+                return false;
+            }
+        } else if (node.right != null) {
+            int compareRight = node.right.weight;
+            if (3 * compareRight > 2 * node.weight) {
+                return false;
+            }
+        }
         return true;
     }
 
     /**
-    * Rebuilds the subtree rooted at node
-    * 
-    * @param node the root of the subtree to rebuild
-    */
+     * Rebuilds the subtree rooted at node
+     *
+     * @param node the root of the subtree to rebuild
+     */
     public void rebuild(TreeNode node) {
         // Error checking: cannot rebuild null tree
         if (node == null) {
@@ -139,47 +166,74 @@ public class SGTree {
         }
 
         newRoot.parent = p;
+
+        updateWeightUpwards(p);
     }
 
     /**
-    * Inserts a key into the tree
-    *
-    * @param key the key to insert
-    */
-    public void insert(int key, int weight) {
+     * Inserts a key into the tree
+     *
+     * @param key the key to insert
+     */
+    public void insert(int key) {
         if (root == null) {
-            root = new TreeNode(key, weight);
+            root = new TreeNode(key);
             return;
         }
 
-        insert(key, weight, root);
+        TreeNode inserted = insertAndReturn(key, root);
+        updateWeightUpwards(inserted.parent);
+        TreeNode current = inserted.parent;
+        TreeNode scapegoat = null;
+
+        while (current != null) {
+            if (!checkBalance(current)) {
+                scapegoat = current;
+            }
+            current = current.parent;
+        }
+
+        if (scapegoat != null) {
+            rebuild(scapegoat);
+        }
     }
 
     // Helper method to insert a key into the tree
-    private void insert(int key, int weight, TreeNode node) {
+    private TreeNode insertAndReturn(int key, TreeNode node) {
         if (key <= node.key) {
             if (node.left == null) {
                 node.left = new TreeNode(key);
                 node.left.parent = node;
+                return node.left;
             } else {
-                insert(key, weight, node.left);
+                return insertAndReturn(key, node.left);   // FIX: return + correct function
             }
         } else {
             if (node.right == null) {
                 node.right = new TreeNode(key);
                 node.right.parent = node;
+                return node.right;
             } else {
-                insert(key, weight, node.right);
+                return insertAndReturn(key, node.right);
             }
         }
     }
 
-    // Simple main function for debugging purposes
-    public static void main(String[] args) {
-        SGTree tree = new SGTree();
-        for (int i = 0; i < 100; i++) {
-            tree.insert(i);
+    private void updateWeightUpwards(TreeNode node) {
+        while (node != null) {
+            int lw = (node.left == null) ? 0 : node.left.weight;
+            int rw = (node.right == null) ? 0 : node.right.weight;
+            node.weight = 1 + lw + rw;
+            node = node.parent;
         }
-        tree.rebuild(tree.root);
     }
+
+//    // Simple main function for debugging purposes
+//    public static void main(String[] args) {
+//        SGTree tree = new SGTree();
+//        for (int i = 0; i < 100; i++) {
+//            tree.insert(i);
+//        }
+//        tree.rebuild(tree.root);
+//    }
 }
