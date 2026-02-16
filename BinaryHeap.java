@@ -79,9 +79,26 @@ class BinaryMinHeap {
         return this.minHeap.size();
     }
 
-    public Pair<Integer, String> extracMin(){
-        Pair<Integer, String> p = this.minHeap.remove(0);
+    public Pair<Integer, String> extracMin() {
+        this.swap(0, this.size() - 1);
+        Pair<Integer, String> p = this.minHeap.remove(this.size() - 1);
+        bubbleDown(0);
+        int removeID = this.posToIDMap.get(this.size());
+        this.posToIDMap.remove;   
+        
         return p;
+    }
+    
+    public void bubbleDown(int pos) {
+        while(pos * 2 < this.size()) {
+            if (this.minHeap.get(pos) > this.minHeap.get(pos * 2) {
+                swap(pos, pos * 2);   
+                pos = pos * 2;
+            } else if (this.minHeap.get(pos) > this.minHeap.get(pos * 2 + 1)) {
+                swap(pos, pos * 2 + 1);
+                pos = pos * 2 + 1;
+            }
+        }
     }
 }
 

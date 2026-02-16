@@ -127,8 +127,36 @@ public class GameTree {
      * @return value of the root node of the game tree
      */
     int findValue() {
-        // TODO: Implement this
-        return 0;
+        if (root == null) return Integer.MIN_VALUE;
+        return findValue(root, Player.ONE);
+    }
+
+    private int findValue(TreeNode node, Player player) {
+        // Base case: leaf node
+        if (node.leaf) {
+            return node.value;
+        }
+
+        int bestValue;
+
+        if (player == Player.ONE) {
+            // Maximizing player
+            bestValue = Integer.MIN_VALUE;
+            for (int i = 0; i < node.numChildren; i++) {
+                int childValue = findValue(node.children[i], Player.TWO);
+                bestValue = Math.max(bestValue, childValue);
+            }
+        } else {
+            // Minimizing player
+            bestValue = Integer.MAX_VALUE;
+            for (int i = 0; i < node.numChildren; i++) {
+                int childValue = findValue(node.children[i], Player.ONE);
+                bestValue = Math.min(bestValue, childValue);
+            }
+        }
+
+        node.value = bestValue;
+        return bestValue;
     }
 
 

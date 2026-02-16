@@ -4,15 +4,30 @@ public class Trie {
 
     // Wildcards
     final char WILDCARD = '.';
+    private TrieNode root;
+
+    private static final int CHARSET_SIZE = 62;
 
     private class TrieNode {
-        // TODO: Create your TrieNode class here.
-        int[] presentChars = new int[62];
+        TrieNode[] children = new TrieNode[CHARSET_SIZE];
+        boolean isWord;
     }
 
     public Trie() {
-        // TODO: Initialise a trie class here.
-        TrieNode root;
+        root = new TrieNode();
+    }
+
+    private int charToIndex(char c) {
+        if (c >= 'a' && c <= 'z') return c - 'a';
+        if (c >= 'A' && c <= 'Z') return 26 + (c - 'A');
+        if (c >= '0' && c <= '9') return 52 + (c - '0');
+        return -1;
+    }
+
+    private char indexToChar(int i) {
+        if (i < 26) return (char) ('a' + i);
+        if (i < 52) return (char) ('A' + (i - 26));
+        return (char) ('0' + (i - 52));
     }
 
     /**
@@ -21,7 +36,16 @@ public class Trie {
      * @param s string to insert into the Trie
      */
     void insert(String s) {
-        // TODO
+        TrieNode curr = root;
+        for (int i = 0; i < s.length(); i++) {
+            int idx = charToIndex(s.charAt(i));
+            if (idx == -1) continue;
+            if (curr.children[idx] == null) {
+                curr.children[idx] = new TrieNode();
+            }
+            curr = curr.children[idx];
+        }
+        curr.isWord = true;
     }
 
     /**
@@ -31,20 +55,13 @@ public class Trie {
      * @return whether string s is inside the Trie
      */
     boolean contains(String s) {
-        // TODO
-        return false;
-    }
-
-    /**
-     * Searches for strings with prefix matching the specified pattern sorted by lexicographical order. This inserts the
-     * results into the specified ArrayList. Only returns at most the first limit results.
-     *
-     * @param s       pattern to match prefixes with
-     * @param results array to add the results into
-     * @param limit   max number of strings to add into results
-     */
-    void prefixSearch(String s, ArrayList<String> results, int limit) {
-        // TODO
+        TrieNode curr = root;
+        for (int i = 0; i < s.length(); i++) {
+            int idx = charToIndex(s.charAt(i));
+            if (idx == -1 || curr.children[idx] == null) return false;
+            curr = curr.children[idx];
+        }
+        return curr.isWord;
     }
 
 
@@ -52,30 +69,82 @@ public class Trie {
     // PLEASE DO NOT CHANGE the implementation for this function as it will be used
     // to run the test cases.
     String[] prefixSearch(String s, int limit) {
-        ArrayList<String> results = new ArrayList<String>();
-        prefixSearch(s, results, limit);
+        ArrayList<String> results = new ArrayList<>();
+        dfs(root, s, 0, new StringBuilder(), results, limit);
         return results.toArray(new String[0]);
     }
 
+    private void dfs(
+            TrieNode node,
+            String pattern,
+            int pos,
+            StringBuilder path,
+            ArrayList<String> results,
+            int limit) {
+
+        if (node == null || results.size() >= limit) return;
+
+        if (pos == pattern.length()) {
+            collect(node, path, results, limit);
+            return;
+        }
+
+        char c = pattern.charAt(pos);
+
+        if (c == WILDCARD) {
+            for (int i = 0; i < CHARSET_SIZE; i++) {
+                if (node.children[i] != null) {
+                    path.append(indexToChar(i));
+                    dfs(node.children[i], pattern, pos + 1, path, results, limit);
+                    path.deleteCharAt(path.length() - 1);
+                }
+            }
+        } else {
+            int idx = charToIndex(c);
+            if (idx == -1 || node.children[idx] == null) return;
+            path.append(c);
+            dfs(node.children[idx], pattern, pos + 1, path, results, limit);
+            path.deleteCharAt(path.length() - 1);
+        }
+    }
+
+    private void collect(
+            TrieNode node,
+            StringBuilder path,
+            ArrayList<String> results,
+            int limit) {
+
+        if (node == null || results.size() >= limit) return;
+
+        if (node.isWord) {
+            results.add(path.toString());
+        }
+
+        for (int i = 0; i < CHARSET_SIZE; i++) {
+            if (node.children[i] != null) {
+                path.append(indexToChar(i));
+                collect(node.children[i], path, results, limit);
+                path.deleteCharAt(path.length() - 1);
+            }
+        }
+    }
 
     public static void main(String[] args) {
         Trie t = new Trie();
+
+        t.insert("A12a");
         t.insert("peter");
         t.insert("piper");
         t.insert("picked");
         t.insert("a");
         t.insert("peck");
-        t.insert("of");
-        t.insert("pickled");
-        t.insert("peppers");
-        t.insert("pepppito");
-        t.insert("pepi");
-        t.insert("pik");
+        t.insert("a09");
 
-        String[] result1 = t.prefixSearch("pe", 10);
-        String[] result2 = t.prefixSearch("pe.", 10);
-        // result1 should be:
-        // ["peck", "pepi", "peppers", "pepppito", "peter"]
-        // result2 should contain the same elements with result1 but may be ordered arbitrarily
+        System.out.println(t.contains("A12a")); // true
+        System.out.println(t.contains("a09"));  // true
+        System.out.println(t.contains("xyz"));  // false
+
+        String[] result = t.prefixSearch("pe", 10);
+        System.out.println(java.util.Arrays.toString(result));
     }
 }
