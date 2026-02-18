@@ -7,6 +7,11 @@ class Pair <S, T> {
     S first;
     T second;
 
+    public Pair(S s, T t) {
+        this.first = s;
+        this.second = t;
+    }
+    
     @Override
     public String toString() {
         return "(" + first + ", " + second + ")";
@@ -27,9 +32,7 @@ class BinaryMinHeap {
     }
 
     public void insert(int priority, String value){
-        Pair<Integer, String> p = new Pair<>();
-        p.first = priority;
-        p.second = value;
+        Pair<Integer, String> p = new Pair<>(priority, value);
         this.insert(p);
     }
 
@@ -67,6 +70,7 @@ class BinaryMinHeap {
         // now correct idToPos and posToID maps
         int id1 = this.posToIDMap.get(pos1);
         int id2 = this.posToIDMap.get(pos2);
+
         
         this.posToIDMap.put(pos2, id1); 
         this.posToIDMap.put(pos1, id2); 
@@ -78,9 +82,14 @@ class BinaryMinHeap {
     public int size(){
         return this.minHeap.size();
     }
+    
+    public void decreaseKey(int id, int newPriority) {
+        int pos = this.idToPosMap.get(id);
+        this.minHeap.get(pos).first = newPriority;
+        this.bubbleUp(pos);
+    }
 
     public Pair<Integer, String> extractMin() {
-        
         if(this.size() == 0) {
             return null;
         }
@@ -160,6 +169,22 @@ class BinaryMinHeap {
             }
         }
     }
+    
+    public void heapify(ArrayList<Pair<Integer, String>> arr) {
+        this.minHeap = arr;
+        this.idToPosMap.clear();
+        this.posToIDMap.clear();
+       
+        for (int i = 0; i < arr.size(); i++) {
+            RUNNING_ID++;
+            this.idToPosMap.put(RUNNING_ID, i);
+            this.posToIDMap.put(i, RUNNING_ID);
+        }
+
+        for (int i = this.size() / 2 - 1; i >= 0; i--) {
+            bubbleDown(i);
+        } 
+    }
 }
 
 class MinHeapTest{
@@ -210,5 +235,29 @@ class MinHeapTest{
         System.out.println("----------------------");
         bmh.extractMin();
         System.out.println(bmh.minHeap);
+    
+        ArrayList<Pair<Integer, String>> arr1 = new ArrayList<>();
+        arr1.add(new Pair<Integer, String>(14, "1apple"));
+        arr1.add(new Pair<Integer, String>(4, "4apple"));
+        arr1.add(new Pair<Integer, String>(7, "7apple"));
+        arr1.add(new Pair<Integer, String>(3, "3apple"));
+        arr1.add(new Pair<Integer, String>(5, "5apple"));
+        arr1.add(new Pair<Integer, String>(10, "10apple"));
+        arr1.add(new Pair<Integer, String>(12, "12apple"));
+        arr1.add(new Pair<Integer, String>(2, "2apple"));
+        arr1.add(new Pair<Integer, String>(8, "8apple"));
+        
+        bmh.heapify(arr1);
+        System.out.println("+++++++++++++++++++++");
+        System.out.println(bmh.minHeap);
+        System.out.println(bmh.idToPosMap); 
+        System.out.println(bmh.posToIDMap);
+        
+        bmh.decreaseKey(10, 1);
+    
+        System.out.println("=====================");
+        System.out.println(bmh.minHeap);
+        System.out.println(bmh.idToPosMap); 
+        System.out.println(bmh.posToIDMap);
     }
 }
