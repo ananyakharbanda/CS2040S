@@ -2,11 +2,13 @@ class Node<T extends Comparable<T>> {
     public Node<T> left;
     public Node<T> right;
     public T value;
+    public int height;
 
     public Node(T val) {
         this.value = val;
         this.left = null;
         this.right = null;
+        this.height = 0;
     }
 }
 
@@ -18,11 +20,63 @@ class AVLTree<T extends Comparable<T>> {
         this.root = null;
     }
 
+    private int height(Node<T> node) {
+        return (node == null) ? -1 : node.height;
+    }
+   
+    public int getBalance(Node<T> node) {
+        return (height(node.left) - height(node.right));
+    }
+     
+    private Node<T> leftRotate(Node<T> node) {
+        Node<T> newRoot = node.right;
+        Node<T> temp  = newRoot.left;
+       
+        newRoot.left = node;
+        node.right = temp;
+         
+        node.height = 1 + Math.max(height(node.right), height(node.left));
+        newRoot.height = 1 + Math.max(height(newRoot.left), height(newRoot.right));
+        return newRoot;
+    }
+    
+    private Node<T> rightRotate(Node<T> node) {
+        Node<T> newRoot = node.left;
+        Node<T> temp = newRoot.right;
+    
+        newRoot.right = node;
+        node.left = temp;
+    
+        node.height = 1 + Math.max(height(node.right), height(node.left));
+        newRoot.height = 1 + Math.max(height(newRoot.left), height(newRoot.right));
+        return newRoot; 
+    }
+    
+    public Node<T> findNode(T val) {
+        if (this.root == null) {
+            return null;
+        } else {
+            return findNodeHelper(val, this.root);
+        }
+    }
+    
+    private Node<T> findNodeHelper(T val, Node<T> rt) {
+        if (rt.value == val) {  
+            return rt;
+        } else if (val.compareTo(rt.value) > 0) {
+            return findNodeHelper(val, rt.right);
+        } else if (val.compareTo(rt.value) < 0) {
+            return findNodeHelper(val, rt.left);
+        } else {
+            return rt;
+        } 
+    }
+    
     public void insert(T val) {
         if (this.root == null) {
             this.root = new Node<T>(val);
         } else {
-            insertHelper(val, this.root);
+            this.root = insertHelper(val, this.root);
         }
     }
 
@@ -32,11 +86,25 @@ class AVLTree<T extends Comparable<T>> {
             return rt;
         } else if(val.compareTo(rt.value) > 0) {
             rt.right = insertHelper(val, rt.right);
-            return rt;
         } else if(val.compareTo(rt.value) < 0) {
             rt.left = insertHelper(val, rt.left);
-            return rt;
         }
+    
+        rt.height = 1 + Math.max(height(rt.right), height(rt.left));
+        int balance = getBalance(rt);
+        
+        if (balance > 1 && getBalance(rt.left) >= 0) {
+            return rightRotate(rt);   
+        } else if (balance < -1 && getBalance(rt.right) <= 0) {
+            return leftRotate(rt);
+        } else if (balance > 1 && getBalance(rt.left) < 0) {
+            rt.left = leftRotate(rt.left);
+            return rightRotate(rt);
+        } else if (balance < -1 && getBalance(rt.right) > 0) {
+            rt.right = rightRotate(rt.right);
+            return leftRotate(rt);
+        }
+ 
         return rt;
     }
     
@@ -97,18 +165,25 @@ class AVLTree<T extends Comparable<T>> {
 
 class AVLTreeMain{
     public static void main(String[] args){
-        AVLTree<String> avl = new AVLTree<>();
+        AVLTree<Integer> avl = new AVLTree<>();
 
-        avl.insert("ananya");
-        avl.insert("neha");
-        avl.insert("paras");
-        avl.insert("arun");
-        avl.insert("rinu");
+        // avl.insert("ananya");
+        // avl.insert("neha");
+        // avl.insert("paras");
+        // avl.insert("arun");
+        // avl.insert("rinu");
+        
+        for (int i = 1; i <= 10000; i++) {
+            avl.insert(i);
+        }
 
         avl.inorder();
         System.out.println("------------");
-    
-        avl.delete("neha");
-        avl.inorder();
+            
+        Node<Integer> toFind = avl.findNode(6144);
+        System.out.println(avl.root.value);
+        System.out.println(avl.root.left.value);
+        System.out.println(avl.root.right.value);
+        System.out.println(toFind.height);
     }
 }
