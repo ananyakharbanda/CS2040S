@@ -61,7 +61,7 @@ class AVLTree<T extends Comparable<T>> {
     }
     
     private Node<T> findNodeHelper(T val, Node<T> rt) {
-        if (rt.value == val) {  
+        if (val.compareTo(rt.value) == 0) {  
             return rt;
         } else if (val.compareTo(rt.value) > 0) {
             return findNodeHelper(val, rt.right);
@@ -120,10 +120,8 @@ class AVLTree<T extends Comparable<T>> {
         
         if (val.compareTo(rt.value) < 0) {
             rt.left = deleteHelper(val, rt.left);
-            return rt;
         } else if (val.compareTo(rt.value) > 0) {
             rt.right = deleteHelper(val, rt.right);
-            return rt;  
         } else {
             if (rt.left == null && rt.right == null) {
                 return null;
@@ -135,9 +133,24 @@ class AVLTree<T extends Comparable<T>> {
                 Node<T> successor = findMin(rt.right);
                 rt.value = successor.value;
                 rt.right = deleteHelper(successor.value, rt.right);
-                return rt;
             }
         }
+        
+        rt.height = 1 + Math.max(height(rt.right), height(rt.left));
+        int balance = getBalance(rt);
+            
+        if (balance > 1 && getBalance(rt.left) >= 0) {
+            return rightRotate(rt);   
+        } else if (balance < -1 && getBalance(rt.right) <= 0) {
+            return leftRotate(rt);
+        } else if (balance > 1 && getBalance(rt.left) < 0) {
+            rt.left = leftRotate(rt.left);
+            return rightRotate(rt);
+        } else if (balance < -1 && getBalance(rt.right) > 0) {
+            rt.right = rightRotate(rt.right);
+            return leftRotate(rt);
+        }
+        return rt;
     } 
     
     private Node<T> findMin(Node<T> rt) {   
@@ -181,6 +194,15 @@ class AVLTreeMain{
         System.out.println("------------");
             
         Node<Integer> toFind = avl.findNode(6144);
+        System.out.println(avl.root.value);
+        System.out.println(avl.root.left.value);
+        System.out.println(avl.root.right.value);
+        System.out.println(toFind.height);
+        
+        System.out.println("------------");
+        for (int i = 1; i <= 5000; i++) { 
+            avl.delete(i);
+        }
         System.out.println(avl.root.value);
         System.out.println(avl.root.left.value);
         System.out.println(avl.root.right.value);
